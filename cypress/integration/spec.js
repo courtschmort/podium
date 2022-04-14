@@ -1,4 +1,8 @@
+import WebsiteWidget from '../page-objects/websiteWidget';
+
 describe('Website Widget', () => {
+
+  const websiteWidget = new WebsiteWidget();
 
   beforeEach(() => {
     cy.visit('/');
@@ -17,6 +21,12 @@ describe('Website Widget', () => {
   it('should close the prompt', () => {
     cy.getIframeBody('#podium-prompt').find('button').should('have.text', 'close').click();
     cy.get('#podium-prompt').should('not.exist');
+  });
+
+  it('should open and close the bubble', () => {
+    cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'open');
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'close');
   });
   
 })
