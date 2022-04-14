@@ -8,6 +8,12 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 //
+Cypress.Commands.add('getIframeBody', (selector) => {
+  return cy
+      .get(selector)
+      .its('0.contentDocument.body').should('not.be.empty')
+      .then(cy.wrap)
+})
 //
 // -- This is a parent command --
 // Cypress.Commands.add('login', (email, password) => { ... })

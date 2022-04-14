@@ -14,4 +14,9 @@ describe('Website Widget', () => {
     cy.get('#podium-bubble').should('be.visible');
   });
   
+  it('should close the prompt', () => {
+    cy.getIframeBody('#podium-prompt').find('button').should('have.text', 'close').click();
+    cy.get('#podium-prompt').should('not.exist');
+  });
+  
 })
