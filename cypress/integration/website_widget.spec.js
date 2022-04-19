@@ -79,17 +79,18 @@ describe('Website Widget', () => {
     });
     // Input Name, Mobile Phone, and Message, and submit form
     cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
-        cy.get('.SendSmsPage__TextInvitation').should('exist').and('not.be.visible');
-        cy.get('#Name').type('Courtney Schild');
-        cy.get('input[type=tel]').type('5038669998');
-        cy.get('#Message').type('This is a test.');
-        cy.wrap($form).submit();
-        cy.get('.SendSmsPage__FormContent').should('not.exist');
-        // Check for confirmation
-        cy.get('.SubmittedMessage--visible').should('exist').and('be.visible');
-        cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Received').and('be.visible');
-        cy.get('.ConfirmationMessage').should('be.visible');
-      });
+      cy.get('.SendSmsPage__TextInvitation').should('exist').and('not.be.visible');
+      cy.get('#Name').type('Courtney Schild');
+      cy.get('input[type=tel]').type('5038669998');
+      cy.get('#Message').type('This is a test.');
+      cy.wrap($form).submit();
+      cy.get('.SendSmsPage__FormContent').should('not.exist');
+      // Check for confirmation
+      cy.get('.SubmittedMessage--visible').should('exist').and('be.visible');
+      cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Sending...').and('be.visible');
+      cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Received').and('be.visible');
+      cy.get('.ConfirmationMessage').should('be.visible');
+    });
   });
 
   it('should navigate to Podium Acceptable Use Policy', () => {
@@ -102,15 +103,60 @@ describe('Website Widget', () => {
       })
     });
   });
-    
+
+  it('should return errors within the form when inputs are empty', () => {
+    const errors = [
+      {index: 0, text: 'Name is required'},
+      {index: 1, text: 'Mobile phone is required'},
+      {index: 2, text: 'Message is required'}
+    ];
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
+    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
+      cy.get('button').first().click();
+    });
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
+      cy.wrap($form).submit();
+      errors.forEach((error) => {
+        cy.get('.TextInput__TextInputError').eq(error.index).should('have.text', error.text);
+      });
+    });
   });
 
-  it('should navigate to Podium Acceptable Use Policy', () => {
-    
+  it('should return an error when Mobile Phone* is too short', () => {
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
+    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
+      cy.get('button').first().click();
+    });
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
+      cy.get('#Name').type('Courtney Schild');
+      cy.get('input[type=tel]').type('503'); // too short
+      cy.get('#Message').type('This is a test.');
+      cy.wrap($form).submit();
+      cy.get('.TextInput__TextInputError--tel').should('have.text', 'Mobile phone is too short');
+    });
   });
 
-  it('should return errors within the form', () => {
-    
+  it('should return an error when Mobile Phone* is invalid', () => {
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
+    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
+      cy.get('button').first().click();
+    });
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
+      cy.get('#Name').type('Courtney Schild');
+      cy.get('input[type=tel]').type('0000000000'); // invalid
+      cy.get('#Message').type('This is a test.');
+      cy.wrap($form).submit();
+      cy.get('.SendSmsPage__FormContent').should('not.exist');
+      // Check for confirmation
+      cy.get('.SubmittedMessage--visible').should('exist').and('be.visible');
+      cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Sending...').and('be.visible');
+      cy.get('.ConfirmationMessage').should('not.exist');
+      cy.get('.Legal--error').should('have.text', 'Please enter a phone number that can receive texts.');
+      cy.get('button[type=submit]').should('have.text', 'Try Again');
+    });
   });
   
 })
