@@ -7,3 +7,11 @@ By Courtney Schild
 ## Description
 
 This repository contains an executable automated test suite covering core user flows for https://demo.podium.tools/qa-webchat-lorw/, Podium's webchat widget product, using [Cypress](https://www.cypress.io/) and JavaScript.
+
+## Installation
+
+## Usage
+
+## Known Bugs
+
+## Roadmap
