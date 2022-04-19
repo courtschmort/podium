@@ -7,7 +7,7 @@ describe('Website Widget', () => {
   beforeEach(() => {
     cy.visit('/');
   });
-  
+
   it('should visit the baseUrl', () => {
     cy.url().should('eq', Cypress.config().baseUrl)
   });
@@ -17,7 +17,7 @@ describe('Website Widget', () => {
     cy.get('#podium-prompt').should('be.visible');
     cy.get('#podium-bubble').should('be.visible');
   });
-  
+
   it('should close the prompt', () => {
     cy.get('#podium-prompt').should('exist');
     cy.getIframeBody('#podium-prompt').find('button').should('have.text', 'close').click();
@@ -37,7 +37,7 @@ describe('Website Widget', () => {
     cy.getIframeBody('#podium-modal').click(0, 0);
     cy.get('#podium-modal').should('not.exist');
   });
-  
+
   // The following test is skipped due to a known bug.
   it.skip('should search the modal by postal code or address and return locations', () => {
     websiteWidget.toggle();
@@ -62,9 +62,7 @@ describe('Website Widget', () => {
   // The following test is skipped due to a known bug.
   it.skip('should go back to Select Location when the back arrow is clicked', () => {
     websiteWidget.toggle();
-    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
-      cy.get('button').first().click();
-    });
+    websiteWidget.clickOrem();
     cy.getIframeBody('#podium-modal').find('.SendSmsPage__ArrowIcon').click();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
   });
@@ -74,18 +72,12 @@ describe('Website Widget', () => {
     websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
     // Click 'Scoreboard Sports - Orem'
-    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
-      cy.get('button').first().click();
-    });
+    websiteWidget.clickOrem();
     // Input Name, Mobile Phone, and Message, and submit form
+    websiteWidget.submitForm('Courtney Schild', '5038669998', 'This is a test.');
+    // Check for confirmation
     cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
-      cy.get('.SendSmsPage__TextInvitation').should('exist').and('not.be.visible');
-      cy.get('#Name').type('Courtney Schild');
-      cy.get('input[type=tel]').type('5038669998');
-      cy.get('#Message').type('This is a test.');
-      cy.wrap($form).submit();
       cy.get('.SendSmsPage__FormContent').should('not.exist');
-      // Check for confirmation
       cy.get('.SubmittedMessage--visible').should('exist').and('be.visible');
       cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Sending...').and('be.visible');
       cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Received').and('be.visible');
@@ -106,15 +98,12 @@ describe('Website Widget', () => {
 
   it('should return errors within the form when inputs are empty', () => {
     const errors = [
-      {index: 0, text: 'Name is required'},
-      {index: 1, text: 'Mobile phone is required'},
-      {index: 2, text: 'Message is required'}
+      { index: 0, text: 'Name is required' },
+      { index: 1, text: 'Mobile phone is required' },
+      { index: 2, text: 'Message is required' }
     ];
     websiteWidget.toggle();
-    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
-    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
-      cy.get('button').first().click();
-    });
+    websiteWidget.clickOrem();
     cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
       cy.wrap($form).submit();
       errors.forEach((error) => {
@@ -125,32 +114,20 @@ describe('Website Widget', () => {
 
   it('should return an error when Mobile Phone* is too short', () => {
     websiteWidget.toggle();
-    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
-    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
-      cy.get('button').first().click();
-    });
-    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
-      cy.get('#Name').type('Courtney Schild');
-      cy.get('input[type=tel]').type('503'); // too short
-      cy.get('#Message').type('This is a test.');
-      cy.wrap($form).submit();
+    websiteWidget.clickOrem();
+    websiteWidget.submitForm('Courtney Schild', '503', 'This is a test.');
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(() => {
       cy.get('.TextInput__TextInputError--tel').should('have.text', 'Mobile phone is too short');
     });
   });
 
   it('should return an error when Mobile Phone* is invalid', () => {
     websiteWidget.toggle();
-    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
-    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
-      cy.get('button').first().click();
-    });
-    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(($form) => {
-      cy.get('#Name').type('Courtney Schild');
-      cy.get('input[type=tel]').type('0000000000'); // invalid
-      cy.get('#Message').type('This is a test.');
-      cy.wrap($form).submit();
+    websiteWidget.clickOrem();
+    websiteWidget.submitForm('Courtney Schild', '0000000000', 'This is a test.');
+    // Check for errors
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__MainContent').within(() => {
       cy.get('.SendSmsPage__FormContent').should('not.exist');
-      // Check for confirmation
       cy.get('.SubmittedMessage--visible').should('exist').and('be.visible');
       cy.get('.SubmittedMessage__SendStatus').should('have.text', 'Sending...').and('be.visible');
       cy.get('.ConfirmationMessage').should('not.exist');
@@ -158,5 +135,5 @@ describe('Website Widget', () => {
       cy.get('button[type=submit]').should('have.text', 'Try Again');
     });
   });
-  
+
 })
