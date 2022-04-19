@@ -24,14 +24,14 @@ describe('Website Widget', () => {
     cy.get('#podium-prompt').should('not.exist');
   });
 
-  it('should open and close the modal by toggling the bubble', () => {
+  it('should toggle the modal open and close', () => {
     websiteWidget.toggle();
     cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'close');
     websiteWidget.toggle();
     cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'open');
   });
 
-  it('should open and close the modal by toggling the bubble and clicking outside of the modal', () => {
+  it('should toggle the modal open and click outside of the modal to close', () => {
     websiteWidget.toggle();
     cy.get('#podium-modal').should('exist');
     cy.getIframeBody('#podium-modal').click(0, 0);
