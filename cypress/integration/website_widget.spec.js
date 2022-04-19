@@ -59,6 +59,16 @@ describe('Website Widget', () => {
     });
   });
 
+  // The following test is skipped due to a known bug.
+  it.skip('should go back to Select Location when the back arrow is clicked', () => {
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
+      cy.get('button').first().click();
+    });
+    cy.getIframeBody('#podium-modal').find('.SendSmsPage__ArrowIcon').click();
+    cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
+  });
+
   it('should complete the core user flow of the website widget', () => {
     // Open iframe
     websiteWidget.toggleBubble();
