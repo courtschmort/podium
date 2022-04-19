@@ -92,7 +92,16 @@ describe('Website Widget', () => {
       });
   });
 
-  it('should go back to locations when arrow is clicked', () => {
+  it('should navigate to Podium Acceptable Use Policy', () => {
+    websiteWidget.toggleBubble();
+    cy.getIframeBody('#podium-modal').find('.LocationSelector__PodiumPower').within(() => {
+      // target="_blank" will open link in a new tab
+      cy.contains('a', 'use is subject to terms').then(($link) => {
+        expect($link).to.have.attr('href', 'https://www.podium.com/acceptable-use-policy/');
+        cy.request($link.prop('href')).its('status').should('eq', 200);
+      })
+    });
+  });
     
   });
 
