@@ -2,7 +2,7 @@ export default class WebsiteWidget {
 
   constructor() {}
 
-  toggleBubble() {
+  toggle() {
     return cy
       .getIframeBody('#podium-bubble')
       .find('button')

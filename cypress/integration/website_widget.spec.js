@@ -25,14 +25,14 @@ describe('Website Widget', () => {
   });
 
   it('should open and close the modal by toggling the bubble', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'close');
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-bubble').find('button').invoke('attr', 'aria-label').should('include', 'open');
   });
 
   it('should open and close the modal by toggling the bubble and clicking outside of the modal', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.get('#podium-modal').should('exist');
     cy.getIframeBody('#podium-modal').click(0, 0);
     cy.get('#podium-modal').should('not.exist');
@@ -40,7 +40,7 @@ describe('Website Widget', () => {
   
   // The following test is skipped due to a known bug.
   it.skip('should search the modal by postal code or address and return locations', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').within(() => {
       cy.get('.LocationItemsContainer').children().then(($initialList) => {
         const initialList = $initialList.text();
@@ -61,7 +61,7 @@ describe('Website Widget', () => {
 
   // The following test is skipped due to a known bug.
   it.skip('should go back to Select Location when the back arrow is clicked', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
       cy.get('button').first().click();
     });
@@ -71,7 +71,7 @@ describe('Website Widget', () => {
 
   it('should complete the core user flow of the website widget', () => {
     // Open iframe
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
     // Click 'Scoreboard Sports - Orem'
     cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
@@ -94,7 +94,7 @@ describe('Website Widget', () => {
   });
 
   it('should navigate to Podium Acceptable Use Policy', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector__PodiumPower').within(() => {
       // target="_blank" will open link in a new tab
       cy.contains('a', 'use is subject to terms').then(($link) => {
@@ -110,7 +110,7 @@ describe('Website Widget', () => {
       {index: 1, text: 'Mobile phone is required'},
       {index: 2, text: 'Message is required'}
     ];
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
     cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
       cy.get('button').first().click();
@@ -124,7 +124,7 @@ describe('Website Widget', () => {
   });
 
   it('should return an error when Mobile Phone* is too short', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
     cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
       cy.get('button').first().click();
@@ -139,7 +139,7 @@ describe('Website Widget', () => {
   });
 
   it('should return an error when Mobile Phone* is invalid', () => {
-    websiteWidget.toggleBubble();
+    websiteWidget.toggle();
     cy.getIframeBody('#podium-modal').find('.LocationSelector').should('be.visible');
     cy.getIframeBody('#podium-modal').find('.LocationsList').within(() => {
       cy.get('button').first().click();
