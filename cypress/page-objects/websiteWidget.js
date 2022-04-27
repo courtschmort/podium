@@ -28,5 +28,9 @@ export default class WebsiteWidget {
       cy.wrap($form).submit();
     });
   }
+
+  closePrompt() {
+    cy.getIframeBody('#podium-prompt').find('button').should('have.text', 'close').click();
+  }
   
 }

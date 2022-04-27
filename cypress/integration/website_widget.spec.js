@@ -20,7 +20,7 @@ describe('Website Widget', () => {
 
   it('should close the prompt', () => {
     cy.get('#podium-prompt').should('exist');
-    cy.getIframeBody('#podium-prompt').find('button').should('have.text', 'close').click();
+    websiteWidget.closePrompt();
     cy.get('#podium-prompt').should('not.exist');
   });
 
